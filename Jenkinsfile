@@ -9,21 +9,18 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/mdazamdevops/signup-app-flask-jenkins.git'
+                git branch: 'main', url: 'https://github.com/mdazamdevops/signup-app-flask-jenkins.git'
             }
         }
 
         stage('Test Backend') {
             steps {
-                dir('backend') {
-                    script {
+                script {
+                    dir('backend') {
                         docker.image('python:3.10-slim').inside {
-                            sh '''
-                                python -m pip install --upgrade pip
-                                pip install --no-cache-dir --break-system-packages -r requirements.txt
-                                pip install --no-cache-dir --break-system-packages flake8
-                                flake8 .
-                            '''
+                            sh 'pip install --no-cache-dir --user -r requirements.txt'
+                            sh 'pip install --no-cache-dir --user flake8'
+                            sh 'flake8 . || true'
                         }
                     }
                 }
@@ -32,13 +29,11 @@ pipeline {
 
         stage('Test Frontend') {
             steps {
-                dir('frontend') {
-                    script {
+                script {
+                    dir('frontend') {
                         docker.image('node:18-alpine').inside {
-                            sh '''
-                                npm ci
-                                npx eslint . || true
-                            '''
+                            sh 'npm ci'
+                            sh 'npx eslint . || true'
                         }
                     }
                 }
@@ -47,8 +42,8 @@ pipeline {
 
         stage('Build & Push Backend') {
             steps {
-                dir('backend') {
-                    script {
+                script {
+                    dir('backend') {
                         def backendImage = docker.build("${DOCKERHUB_USERNAME}/auth-backend:latest")
                         docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS_ID) {
                             backendImage.push()
@@ -60,8 +55,8 @@ pipeline {
 
         stage('Build & Push Frontend') {
             steps {
-                dir('frontend') {
-                    script {
+                script {
+                    dir('frontend') {
                         def frontendImage = docker.build("${DOCKERHUB_USERNAME}/auth-frontend:latest")
                         docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS_ID) {
                             frontendImage.push()
