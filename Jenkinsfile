@@ -7,15 +7,10 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/mdazamdevops/signup-app-flask-jenkins.git'
-            }
-        }
+        // The 'Checkout' stage has been removed. Jenkins does this automatically.
 
         stage('Test Backend') {
             steps {
-                // All advanced logic must be inside a 'script' block
                 script {
                     dir('backend') {
                         docker.image('python:3.10-slim').inside {
@@ -30,7 +25,6 @@ pipeline {
 
         stage('Test Frontend') {
             steps {
-                // All advanced logic must be inside a 'script' block
                 script {
                     dir('frontend') {
                         docker.image('node:18-alpine').inside {
@@ -44,7 +38,6 @@ pipeline {
 
         stage('Build & Push Backend') {
             steps {
-                // All advanced logic must be inside a 'script' block
                 script {
                     dir('backend') {
                         def backendImage = docker.build("${DOCKERHUB_USERNAME}/auth-backend:latest")
@@ -58,7 +51,6 @@ pipeline {
 
         stage('Build & Push Frontend') {
             steps {
-                // All advanced logic must be inside a 'script' block
                 script {
                     dir('frontend') {
                         def frontendImage = docker.build("${DOCKERHUB_USERNAME}/auth-frontend:latest")
