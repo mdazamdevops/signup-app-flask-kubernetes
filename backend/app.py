@@ -37,13 +37,14 @@ class User(db.Model):
 
     def to_dict(self):
         """Converts user object to a dictionary (excluding password)."""
-        return {
+        data = {
             "username": self.username,
             "email": self.email,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "last_login": self.last_login.isoformat() if self.last_login else None,
             "login_count": self.login_count
         }
+        data["created_at"] = self.created_at.isoformat() if self.created_at else None
+        data["last_login"] = self.last_login.isoformat() if self.last_login else None
+        return data
 
 
 @app.route('/api/signup', methods=['POST'])
@@ -71,7 +72,6 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
-    # Reformatted for readability and to prevent long lines
     response_data = {
         "message": "Account created successfully!",
         "user": new_user.to_dict()
@@ -97,7 +97,6 @@ def signin():
     user.login_count = user.login_count + 1
     db.session.commit()
 
-    # Reformatted for readability
     response_data = {
         "message": "Login successful!",
         "user": user.to_dict()
