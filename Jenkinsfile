@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clones the repository code
-                git 'https://github.com/mdazamdevops/signup-app-flask-gh-actions.git'
+                git 'https://github.com/mdazamdevops/signup-app-flask-jenkins.git'
             }
         }
 
