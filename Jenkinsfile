@@ -14,7 +14,7 @@ pipeline {
                 script {
                     dir('backend') {
                         docker.image('python:3.10-slim').inside {
-                            sh 'pip install --no-cache-dir -r requirements.txt'
+                            sh 'pip install -r requirements.txt'
                             sh 'pip install flake8'
                             sh 'flake8 .'
                         }
