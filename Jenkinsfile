@@ -7,7 +7,11 @@ pipeline {
     }
 
     stages {
-        // The 'Checkout' stage has been removed. Jenkins does this automatically.
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
         stage('Test Backend') {
             steps {
