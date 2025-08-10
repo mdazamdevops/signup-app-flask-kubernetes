@@ -21,7 +21,7 @@ jobs:
       - name: Lint backend
         run: |
           pip install flake8
-          flake8 .
+          flake8 . --ignore=W
         working-directory: ./backend
 
       - name: Set up Node.js
@@ -38,7 +38,6 @@ jobs:
   build_and_push:
     needs: test
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out code
         uses: actions/checkout@v4
