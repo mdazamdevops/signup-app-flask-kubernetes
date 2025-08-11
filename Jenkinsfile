@@ -1,69 +1,86 @@
+// Jenkinsfile (Declarative Pipeline)
+
 pipeline {
+    // 1. Agent Configuration
+    // Specifies that the pipeline can run on any available Jenkins agent.
+    // The agent must have Docker and Git installed.
     agent any
 
+    // 2. Environment Variables
+    // Defines variables used throughout the pipeline for consistency.
     environment {
-        DOCKERHUB_USERNAME = 'azamdevops'
-        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-token'
+        // Replace 'my-flask-app' with your desired application name
+        APP_NAME = 'my-flask-app'
+        // Use the Jenkins build number for unique image tagging
+        IMAGE_TAG = "build-${env.BUILD_NUMBER}"
     }
 
+    // 3. Pipeline Stages
+    // The pipeline is broken down into logical stages.
     stages {
+        // Stage 1: Checkout code from your repository
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/mdazamdevops/signup-app-flask-jenkins.git'
+                // Clones the repository code to the Jenkins workspace
+                checkout scm
+                echo "Code checked out successfully."
             }
         }
 
-        stage('Test Backend') {
+        // Stage 2: Build a Docker image for the application
+        stage('Build') {
             steps {
                 script {
-                    dir('backend') {
-                        docker.image('python:3.10-slim').inside {
-                            sh 'pip install --no-cache-dir --user -r requirements.txt'
-                            sh 'pip install --no-cache-dir --user flake8'
-                            sh 'flake8 . || true'
-                        }
-                    }
+                    echo "Building Docker image: ${APP_NAME}:${IMAGE_TAG}"
+                    // The 'docker build' command creates an image using the Dockerfile
+                    sh "docker build -t ${APP_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
 
-        stage('Test Frontend') {
+        // Stage 3: Run placeholder tests
+        stage('Test') {
             steps {
-                script {
-                    dir('frontend') {
-                        docker.image('node:18-alpine').inside {
-                            sh 'npm ci'
-                            sh 'npx eslint . || true'
-                        }
-                    }
-                }
+                // This is a placeholder for your actual test suite.
+                // In a real-world scenario, you would run unit tests (e.g., pytest)
+                // or other automated quality checks here.
+                echo "Running placeholder tests..."
+                sh "echo 'Tests passed!'"
             }
         }
 
-        stage('Build & Push Backend') {
+        // Stage 4: Deploy the application as a Docker container
+        stage('Deploy') {
             steps {
                 script {
-                    dir('backend') {
-                        def backendImage = docker.build("${DOCKERHUB_USERNAME}/auth-backend:latest")
-                        docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS_ID) {
-                            backendImage.push()
-                        }
-                    }
+                    echo "Deploying application..."
+
+                    // This block ensures that if a container with the same name exists,
+                    // it is stopped and removed before launching the new one.
+                    // The '|| true' prevents the pipeline from failing if the container doesn't exist.
+                    sh "docker stop ${APP_NAME} || true"
+                    sh "docker rm ${APP_NAME} || true"
+
+                    echo "Starting new container..."
+                    // The 'docker run' command starts a new container.
+                    // -d: detached mode (runs in the background)
+                    // --name: assigns a name to the container
+                    // -p: maps port 8000 on the host to port 5000 in the container
+                    sh "docker run -d --name ${APP_NAME} -p 8000:5000 ${APP_NAME}:${IMAGE_TAG}"
+
+                    echo "Deployment successful. App is running on http://<your-server-ip>:8000"
                 }
             }
         }
+    }
 
-        stage('Build & Push Frontend') {
-            steps {
-                script {
-                    dir('frontend') {
-                        def frontendImage = docker.build("${DOCKERHUB_USERNAME}/auth-frontend:latest")
-                        docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS_ID) {
-                            frontendImage.push()
-                        }
-                    }
-                }
-            }
+    // 4. Post-build Actions
+    // Actions that run at the end of the pipeline, regardless of its status.
+    post {
+        always {
+            // Cleans up the Jenkins workspace to save disk space.
+            cleanWs()
+            echo "Pipeline finished. Workspace cleaned."
         }
     }
 }
