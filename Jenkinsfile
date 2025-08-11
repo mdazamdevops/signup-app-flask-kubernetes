@@ -38,11 +38,16 @@ pipeline {
             }
         }
 
-        // --- MODIFIED DEPLOY STAGE ---
         stage('Deploy from Registry') {
             steps {
                 script {
                     echo "Deploying application using docker-compose.prod.yml..."
+                    
+                    // Forcefully remove containers if they exist, to prevent conflicts.
+                    // The '|| true' ensures the pipeline doesn't fail if the container isn't there.
+                    echo "Removing any old containers to prevent conflicts..."
+                    sh "docker rm -f prod-auth-backend || true"
+                    sh "docker rm -f prod-auth-frontend || true"
                     
                     // Use the -f flag to specify the production compose file for each command
                     sh "docker-compose -f docker-compose.prod.yml pull"
