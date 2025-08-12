@@ -1,20 +1,17 @@
 version: '3.8'
 
 services:
-  
   backend:
-    
     image: azamdevops/auth-backend:latest
     container_name: prod-auth-backend
     restart: always
     ports:
       - "5000:5000"
     volumes:
-     
+      # check if error in this file
       - ./backend/database.db:/app/database.db
-   
+
   frontend:
-  
     image: azamdevops/auth-frontend:latest
     container_name: prod-auth-frontend
     restart: always

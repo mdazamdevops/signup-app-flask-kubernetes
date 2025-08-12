@@ -1,0 +1,22 @@
+# 3-frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: auth-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-frontend
+  template:
+    metadata:
+      labels:
+        app: auth-frontend
+    spec:
+      containers:
+      - name: frontend-container
+        image: azamdevops/auth-frontend:latest
+        ports:
+        - containerPort: 3000
