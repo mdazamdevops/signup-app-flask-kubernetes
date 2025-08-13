@@ -62,9 +62,6 @@ To log in to Docker Hub securely, the pipeline uses encrypted secrets stored in 
 * **`DOCKERHUB_TOKEN`**: Stores a secure Docker Hub Access Token used as a password.
 
 ---
-## CI/CD with Jenkins
-
-As an alternative to GitHub Actions, this project also includes a CI/CD pipeline configured for **Jenkins**, one of the most popular and powerful open-source automation servers.
 
 #### How the Pipeline Was Built
 The entire Jenkins workflow is defined in the `Jenkinsfile` located in the project's root directory. This file uses a Declarative Pipeline syntax to define all the stages for building and testing the application.
@@ -82,24 +79,7 @@ When the pipeline is run in Jenkins (either manually or via a webhook), the foll
 Instead of GitHub Secrets, Jenkins uses its built-in **Credentials Manager** (`Manage Jenkins > Credentials`). For this pipeline, a "Username with password" credential with the ID `dockerhub-token` was created to securely store the Docker Hub username and access token.
 
 ---
-## Infrastructure as Code (IaC) with Terraform
 
-To automate the creation of the infrastructure needed to run our application, this project uses **Terraform**.
-
-#### What is Infrastructure as Code?
-Infrastructure as Code (IaC) is the practice of managing and provisioning infrastructure (like servers, networks, and containers) through code, rather than through manual processes. A configuration file acts as a blueprint for your infrastructure. This makes your setup repeatable, version-controlled, and easy to manage.
-
-#### How Terraform Was Used
-The entire application stack is defined in a single configuration file: `main.tf`. This file tells Terraform how to:
-1.  Connect to the local Docker engine.
-2.  Pull the `auth-backend` and `auth-frontend` images from Docker Hub.
-3.  Create a dedicated network for the containers to communicate.
-4.  Create and run the backend and frontend containers with the correct ports and volumes mapped.
-
-#### The Terraform Workflow Commands
-The following commands were used to manage the infrastructure: `terraform init` (to initialize), `terraform plan` (to preview), `terraform apply` (to create), and `terraform destroy` (to remove).
-
----
 ## Orchestration with Kubernetes
 
 For a production-grade deployment, this project was deployed to a **Kubernetes** cluster, managed locally with **Minikube**.
