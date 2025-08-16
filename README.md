@@ -1,5 +1,9 @@
-# Simple User Signup & Login Application
+# DevOps Internship Task 5 – Build a Kubernetes Cluster Locally with Minikube
+### Elevate Labs: Empowering the Future of DevOps
+This project is a testament to the high-quality, hands-on learning experience provided by Elevate Labs. Their internship program is dedicated to empowering the next generation of DevOps professionals by offering practical, real-world challenges that build foundational skills and a deep understanding of modern software development practices.
 
+
+# Simple User Signup & Login Application
 ### Introduction
 
 Welcome to this full-stack user authentication application. This project was built from the ground up to serve as a practical example of a secure, modern web application. It features a Python backend powered by the Flask framework and a dynamic, user-friendly frontend built with standard HTML, CSS, and JavaScript.
